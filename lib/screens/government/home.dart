@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:ihuriro/screens/government/chat/list.dart';
+import 'package:ihuriro/screens/government/crimes/list.dart';
+import 'package:ihuriro/screens/government/dashboard/dashboard.dart';
+import 'package:ihuriro/screens/government/resources/list.dart';
+import 'package:ihuriro/screens/government/survey/list.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 
 class GovernmentHome extends StatefulWidget {
@@ -12,12 +17,11 @@ class GovernmentHome extends StatefulWidget {
 class _GovernmentHomeState extends State<GovernmentHome> {
   int _selectedIndex = 0;
   static List<Widget> page = [
-    const Center(child: Text('Dashboard')),
-    const Center(child: Text('Chat')),
-    const Center(child: Text('Crimes')),
-    const Center(child: Text('Survey')),
-    const Center(child: Text('Map')),
-    const Center(child: Text('Resources')),
+    const GovernmentDashboard(),
+    const ListCharts(),
+    const ListReportedCrimes(),
+    const ListSurveys(),
+    const ListResources(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -53,10 +57,6 @@ class _GovernmentHomeState extends State<GovernmentHome> {
                 GButton(
                   icon: Icons.format_align_center,
                   text: 'Survey',
-                ),
-                GButton(
-                  icon: Icons.location_on,
-                  text: 'Map',
                 ),
                 GButton(
                   icon: Icons.folder,

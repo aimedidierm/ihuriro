@@ -1,6 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:ihuriro/models/api_response.dart';
+import 'package:ihuriro/screens/auth/register.dart';
+import 'package:ihuriro/screens/government/home.dart';
+import 'package:ihuriro/screens/report/anonymous.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/utils/text_utils.dart';
 
@@ -13,8 +18,19 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+
+  bool _loading = false;
+
+  void loginUser() async {
+    // ApiResponse response = await login(email.text, password.text);
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const GovernmentHome(),
+        ),
+        (route) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +48,7 @@ class _LoginState extends State<Login> {
           width: double.infinity,
           margin: const EdgeInsets.symmetric(horizontal: 30),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.white),
+            border: Border.all(color: primaryRed),
             borderRadius: BorderRadius.circular(15),
             color: Colors.black.withOpacity(0.1),
           ),
@@ -104,27 +120,78 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     const Spacer(),
-                    Container(
-                      height: 40,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: primaryRed,
-                          borderRadius: BorderRadius.circular(30)),
-                      alignment: Alignment.center,
-                      child: TextUtil(
-                        text: "Log In",
-                        color: Colors.white,
+                    GestureDetector(
+                      onTap: () {
+                        // if (formkey.currentState!.validate()) {
+                        setState(() {
+                          _loading = true;
+                        });
+                        loginUser();
+                        // }
+                      },
+                      child: Container(
+                        height: 40,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: primaryRed,
+                            borderRadius: BorderRadius.circular(30)),
+                        alignment: Alignment.center,
+                        child: _loading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : TextUtil(
+                                text: "Log In",
+                                color: Colors.white,
+                              ),
                       ),
                     ),
                     const Spacer(),
                     Center(
-                      child: TextUtil(
-                        text: "Don't have a account REGISTER",
-                        size: 12,
-                        weight: true,
+                      child: Row(
+                        children: [
+                          TextUtil(
+                            text: "Don't have a account ",
+                            size: 12,
+                            weight: true,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(
+                                  builder: (BuildContext context) {
+                                return const Register();
+                              }));
+                            },
+                            child: TextUtil(
+                              text: "REGISTER",
+                              size: 14,
+                              weight: true,
+                              color: primaryRed,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (BuildContext context) {
+                              return const Anonymous();
+                            }));
+                          },
+                          child: TextUtil(
+                            text: "Anonymous Reporting",
+                            size: 14,
+                            weight: true,
+                            color: primaryRed,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),

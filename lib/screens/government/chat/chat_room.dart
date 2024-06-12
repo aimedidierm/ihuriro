@@ -118,7 +118,7 @@ class ChatRoomScreen extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.send, color: Colors.teal),
+                    icon: Icon(Icons.send, color: primaryRed),
                     onPressed: () {},
                   ),
                 ],

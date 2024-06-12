@@ -44,16 +44,7 @@ class _ListChartsState extends State<ListCharts> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).pop(context);
-                        },
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                          size: 40,
-                        ),
-                      ),
+                      const SizedBox(width: 10),
                       const SizedBox(width: 10),
                       const Text(
                         "Chats",

@@ -40,7 +40,7 @@ class _GovernmentHomeState extends State<GovernmentHome> {
               gap: 10,
               padding: const EdgeInsets.all(10),
               duration: const Duration(milliseconds: 400),
-              tabBorderRadius: 10,
+              tabBorderRadius: 40,
               tabs: const [
                 GButton(
                   icon: Icons.dashboard,

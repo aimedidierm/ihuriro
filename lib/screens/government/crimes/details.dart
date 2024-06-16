@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:ihuriro/screens/government/map/view.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
 
-class ResourcesDetails extends StatefulWidget {
-  final String title, description, summary;
-  const ResourcesDetails({
+class CrimeDetails extends StatefulWidget {
+  final String title, description, location, type, status;
+  const CrimeDetails({
     Key? key,
     required this.title,
     required this.description,
-    required this.summary,
+    required this.location,
+    required this.type,
+    required this.status,
   }) : super(key: key);
 
   @override
-  State<ResourcesDetails> createState() => _ResourcesDetailsState();
+  State<CrimeDetails> createState() => _CrimeDetailsState();
 }
 
-class _ResourcesDetailsState extends State<ResourcesDetails> {
+class _CrimeDetailsState extends State<CrimeDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +82,18 @@ class _ResourcesDetailsState extends State<ResourcesDetails> {
               height: 10,
             ),
             Text(
-              widget.summary,
+              'Type: ${widget.type}',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: primaryRed,
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              'Status: ${widget.status}',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -90,6 +104,35 @@ class _ResourcesDetailsState extends State<ResourcesDetails> {
               height: 20,
             ),
             Text(widget.description),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) {
+                      return const ViewMap();
+                    },
+                  ),
+                );
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateColor.resolveWith(
+                  (states) => primaryRed,
+                ),
+                padding: MaterialStateProperty.resolveWith(
+                  (states) => const EdgeInsets.symmetric(vertical: 10),
+                ),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 60),
+                child: Text(
+                  'View Location',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

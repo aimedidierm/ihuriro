@@ -8,37 +8,50 @@ class AppBarClipPath extends CustomClipper<Path> {
 
     Path path = Path();
     path.moveTo(
-      width * -0.0050307,
-      height * -0.0019437,
-    );
-    path.lineTo(
-      width * -0.0050307,
-      height * 0.6358735,
+      0,
+      height * -0.0020000,
     );
     path.quadraticBezierTo(
-      width * 0.0544036,
-      height * 0.9635962,
-      width * 0.1194983,
-      height * 0.9660000,
+      width * -0.0009375,
+      height * 0.7510000,
+      width * -0.0012500,
+      height * 1.0020000,
     );
     path.cubicTo(
-      width * 0.7440298,
-      height * 0.8650390,
-      width * 0.8283070,
-      height * 0.9643974,
-      width * 0.8754770,
-      height * 0.9660000,
+      width * -0.0013125,
+      height * 0.8827800,
+      width * 0.0668000,
+      height * 0.8040600,
+      width * 0.1250000,
+      height * 0.8020000,
+    );
+    path.cubicTo(
+      width * 0.3125000,
+      height * 0.8015000,
+      width * 0.6875000,
+      height * 0.8005000,
+      width * 0.8750000,
+      height * 0.8000000,
+    );
+    path.cubicTo(
+      width * 0.9345375,
+      height * 0.8052000,
+      width * 1.0003375,
+      height * 0.8742400,
+      width,
+      height * 1.0020000,
     );
     path.quadraticBezierTo(
-      width * 0.9374271,
-      height * 0.9643974,
-      width * 1.0025217,
-      height * 0.6390786,
+      width * 1.0003125,
+      height * 0.7510000,
+      width * 1.0012500,
+      height * -0.0020000,
     );
     path.lineTo(
-      width * 1.0012639,
-      height * -0.0051488,
+      0,
+      height * -0.0020000,
     );
+    path.close();
 
     return path;
   }

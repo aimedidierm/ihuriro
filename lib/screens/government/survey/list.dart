@@ -10,6 +10,8 @@ class ListSurveys extends StatefulWidget {
 }
 
 class _ListSurveysState extends State<ListSurveys> {
+  bool _loading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,6 +53,62 @@ class _ListSurveysState extends State<ListSurveys> {
             ),
           ),
         ),
+      ),
+      body: Center(
+        child: _loading
+            ? Center(
+                child: CircularProgressIndicator(
+                  color: primaryRed,
+                ),
+              )
+            : Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: 10,
+                      itemBuilder: (context, index) => Card(
+                        key: ValueKey(index),
+                        margin: const EdgeInsets.symmetric(vertical: 6),
+                        child: Column(
+                          children: [
+                            ListTile(
+                              title: const Text(
+                                'Bella Isimbi',
+                                textAlign: TextAlign.justify,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              contentPadding: const EdgeInsets.all(16),
+                              onTap: () {
+                                // Navigator.of(context).push(
+                                //   MaterialPageRoute(
+                                //     builder: (BuildContext context) {
+                                //       return CrimeDetails(
+                                //         title: _allCrimes[index]['title'],
+                                //         description: _allCrimes[index]
+                                //             ['description'],
+                                //         location: _allCrimes[index]['location'],
+                                //         type: _allCrimes[index]['type'],
+                                //         status: _allCrimes[index]['status'],
+                                //       );
+                                //     },
+                                //   ),
+                                // );
+                              },
+                              subtitle: const Text(
+                                '24/04/2024',
+                                textAlign: TextAlign.justify,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }

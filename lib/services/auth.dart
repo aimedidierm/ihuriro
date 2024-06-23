@@ -4,6 +4,7 @@ import 'package:ihuriro/constants/api_constants.dart';
 import 'package:ihuriro/models/api_response.dart';
 import 'package:http/http.dart' as http;
 import 'package:ihuriro/models/user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<ApiResponse> login(String email, String password) async {
   ApiResponse apiResponse = ApiResponse();
@@ -39,4 +40,19 @@ Future<ApiResponse> login(String email, String password) async {
   }
 
   return apiResponse;
+}
+
+Future<String> getToken() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  return pref.getString('token') ?? '';
+}
+
+Future<String> getRole() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  return pref.getString('role') ?? '';
+}
+
+Future<bool> logout() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  return await pref.remove('token');
 }

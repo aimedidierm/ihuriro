@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:ihuriro/constants/api_constants.dart';
 import 'package:ihuriro/screens/government/crimes/details.dart';
 import 'package:ihuriro/screens/government/map/view.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
+import 'package:ihuriro/services/auth.dart';
+import 'package:http/http.dart' as http;
 
 class ListReportedCrimes extends StatefulWidget {
   const ListReportedCrimes({super.key});
@@ -12,24 +17,36 @@ class ListReportedCrimes extends StatefulWidget {
 }
 
 class _ListReportedCrimesState extends State<ListReportedCrimes> {
-  bool _loading = false;
+  bool _loading = true;
 
-  final List<Map<String, dynamic>> _allCrimes = [
-    {
-      "title": "Accident in Remera",
-      "description": "Habaye ikibazo gituma umuriro ugenda ahantu hose.",
-      "location": "30303,9090",
-      "type": "crime",
-      "status": "active",
-    },
-    {
-      "title": "Bank robbed",
-      "description": "Habaye ikibazo gituma umuriro ugenda ahantu hose.",
-      "location": "30303,9090",
-      "type": "oridinary",
-      "status": "inactive",
+  List<Map<String, dynamic>> _allReported = [];
+
+  Future<void> fetchData() async {
+    String token = await getToken();
+    final response = await http.get(Uri.parse(governmentReportedURL), headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    });
+
+    if (response.statusCode == 200) {
+      final decodedResponse = json.decode(response.body);
+      final List<dynamic> decodedReporteds = decodedResponse['reported'];
+      final List<Map<String, dynamic>> reporteds =
+          List<Map<String, dynamic>>.from(decodedReporteds);
+      setState(() {
+        _allReported = reporteds;
+        _loading = false;
+      });
+    } else {
+      // print('Request failed with status: ${response.statusCode}.');
     }
-  ];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +101,7 @@ class _ListReportedCrimesState extends State<ListReportedCrimes> {
                 children: [
                   Expanded(
                     child: ListView.builder(
-                      itemCount: 10,
+                      itemCount: _allReported.length,
                       itemBuilder: (context, index) => Card(
                         key: ValueKey(index),
                         margin: const EdgeInsets.symmetric(vertical: 6),
@@ -92,7 +109,7 @@ class _ListReportedCrimesState extends State<ListReportedCrimes> {
                           children: [
                             ListTile(
                               title: Text(
-                                _allCrimes[index]['title'],
+                                _allReported[index]['title'],
                                 textAlign: TextAlign.justify,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -103,12 +120,13 @@ class _ListReportedCrimesState extends State<ListReportedCrimes> {
                                   MaterialPageRoute(
                                     builder: (BuildContext context) {
                                       return CrimeDetails(
-                                        title: _allCrimes[index]['title'],
-                                        description: _allCrimes[index]
+                                        title: _allReported[index]['title'],
+                                        description: _allReported[index]
                                             ['description'],
-                                        location: _allCrimes[index]['location'],
-                                        type: _allCrimes[index]['type'],
-                                        status: _allCrimes[index]['status'],
+                                        location: _allReported[index]
+                                            ['location'],
+                                        type: _allReported[index]['type'],
+                                        status: _allReported[index]['status'],
                                       );
                                     },
                                   ),
@@ -119,12 +137,12 @@ class _ListReportedCrimesState extends State<ListReportedCrimes> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    _allCrimes[index]['type'],
+                                    _allReported[index]['type'],
                                     textAlign: TextAlign.justify,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  (_allCrimes[index]['status'] == 'inactive')
+                                  (_allReported[index]['status'] == 'inactive')
                                       ? Container(
                                           decoration: BoxDecoration(
                                             color:

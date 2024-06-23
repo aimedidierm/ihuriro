@@ -27,8 +27,6 @@ class _ViewMapState extends State<ViewMap> {
   Map<PolylineId, Polyline> polylines = {};
   final Map<PolygonId, Polygon> _polygons = {};
   StreamSubscription<LocationData>? _locationSubscription;
-  bool _notificationSentOutSide = false;
-  bool _notificationSentInSide = false;
 
   @override
   void initState() {
@@ -40,7 +38,6 @@ class _ViewMapState extends State<ViewMap> {
             }),
       },
     );
-    _createGeofence();
   }
 
   @override
@@ -101,8 +98,8 @@ class _ViewMapState extends State<ViewMap> {
         ),
       ),
       body: _currentP == null
-          ? const Center(
-              child: Text("Loading..."),
+          ? Center(
+              child: CircularProgressIndicator(color: primaryRed),
             )
           : GoogleMap(
               onMapCreated: ((GoogleMapController controller) =>
@@ -132,40 +129,12 @@ class _ViewMapState extends State<ViewMap> {
     );
   }
 
-  void _createGeofence() {
-    // Define the boundaries for the larger geofence around Kigali
-    List<LatLng> kigaliBoundaries = [
-      const LatLng(-1.9740, 30.0274), // Northwest corner
-      const LatLng(-1.9740, 30.1300), // Northeast corner
-      const LatLng(-1.8980, 30.1300), // Southeast corner
-      const LatLng(-1.8980, 30.0274), // Southwest corner
-    ];
-
-    // Create a polygon to represent the geofence boundaries
-    PolygonId polygonId = const PolygonId('kigali');
-    Polygon polygon = Polygon(
-      polygonId: polygonId,
-      points: kigaliBoundaries,
-      strokeWidth: 2,
-      strokeColor: Colors.blue,
-      fillColor: Colors.blue.withOpacity(0.3),
-    );
-
-    // Add the polygon to the map
-    setState(() {
-      _polygons[polygonId] = polygon;
-    });
-
-    // Start location updates subscription to monitor device's location
-    _startLocationUpdates();
-  }
-
   void _startLocationUpdates() async {
     _locationSubscription = _locationController.onLocationChanged
         .listen((LocationData currentLocation) {
       // Check if the device's location is inside or outside the geofence
-      bool insideGeofence = _isLocationInsideGeofence(
-          currentLocation.latitude!, currentLocation.longitude!);
+      // bool insideGeofence = _isLocationInsideGeofence(
+      //     currentLocation.latitude!, currentLocation.longitude!);
 
       // if (insideGeofence && !_notificationSentInSide) {
       //   _triggerInSideNotification();

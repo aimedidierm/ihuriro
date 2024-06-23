@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ihuriro/screens/government/chat/chat_room.dart';
+import 'package:ihuriro/screens/government/users/list.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
 
@@ -108,6 +109,22 @@ class _ListChartsState extends State<ListCharts> {
             ),
           );
         },
+      ),
+      floatingActionButton: Visibility(
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LawUsersList(),
+              ),
+            );
+          },
+          child: Icon(
+            Icons.group,
+            color: primaryRed,
+          ),
+        ),
       ),
     );
   }

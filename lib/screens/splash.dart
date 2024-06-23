@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:ihuriro/screens/auth/login.dart';
+import 'package:ihuriro/screens/loading.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 
 class Splash extends StatefulWidget {
@@ -18,7 +18,7 @@ class _SplashState extends State<Splash> {
       const Duration(seconds: 3),
       () => Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (context) => const Login(),
+          builder: (context) => const Loading(),
         ),
         (route) => false,
       ),

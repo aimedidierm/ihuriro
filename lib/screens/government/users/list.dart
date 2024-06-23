@@ -2,28 +2,27 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:ihuriro/constants/api_constants.dart';
-import 'package:ihuriro/screens/government/resources/create.dart';
-import 'package:ihuriro/screens/government/resources/details.dart';
+import 'package:ihuriro/screens/government/users/create.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:ihuriro/services/auth.dart';
 
-class ListResources extends StatefulWidget {
-  const ListResources({super.key});
+class LawUsersList extends StatefulWidget {
+  const LawUsersList({super.key});
 
   @override
-  State<ListResources> createState() => _ListResourcesState();
+  State<LawUsersList> createState() => _LawUsersListState();
 }
 
-class _ListResourcesState extends State<ListResources> {
-  bool _loading = false;
+class _LawUsersListState extends State<LawUsersList> {
+  bool _loading = true;
 
-  List<Map<String, dynamic>> _allResources = [];
+  List<Map<String, dynamic>> _allUsers = [];
 
   Future<void> fetchData() async {
     String token = await getToken();
-    final response = await http.get(Uri.parse(governmentResourcesURL),
+    final response = await http.get(Uri.parse(governmentLawUsersdURL),
         headers: {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token'
@@ -31,11 +30,11 @@ class _ListResourcesState extends State<ListResources> {
 
     if (response.statusCode == 200) {
       final decodedResponse = json.decode(response.body);
-      final List<dynamic> decodedResources = decodedResponse['resources'];
-      final List<Map<String, dynamic>> resources =
-          List<Map<String, dynamic>>.from(decodedResources);
+      final List<dynamic> decodedUsers = decodedResponse['users'];
+      final List<Map<String, dynamic>> users =
+          List<Map<String, dynamic>>.from(decodedUsers);
       setState(() {
-        _allResources = resources;
+        _allUsers = users;
         _loading = false;
       });
     } else {
@@ -64,25 +63,34 @@ class _ListResourcesState extends State<ListResources> {
                 end: Alignment.bottomRight,
               ),
             ),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 50,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SizedBox(width: 10),
-                      Text(
-                        "Safety resources",
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop(context);
+                        },
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                      ),
+                      const Text(
+                        'Manage Law Users',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
                         ),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 20),
                     ],
                   ),
                 ],
@@ -91,7 +99,8 @@ class _ListResourcesState extends State<ListResources> {
           ),
         ),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: _loading
             ? Center(
                 child: CircularProgressIndicator(
@@ -102,40 +111,38 @@ class _ListResourcesState extends State<ListResources> {
                 children: [
                   Expanded(
                     child: ListView.builder(
-                      itemCount: _allResources.length,
+                      itemCount: _allUsers.length,
                       itemBuilder: (context, index) => Card(
                         key: ValueKey(index),
                         margin: const EdgeInsets.symmetric(vertical: 6),
                         child: Column(
                           children: [
                             ListTile(
-                              title: Text(
-                                _allResources[index]['title'],
-                                textAlign: TextAlign.justify,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                              title: Row(
+                                children: [
+                                  const Text(
+                                    "Name: ",
+                                    textAlign: TextAlign.justify,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    _allUsers[index]['name'],
+                                    textAlign: TextAlign.justify,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
                               ),
                               contentPadding: const EdgeInsets.all(16),
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (BuildContext context) {
-                                      return ResourcesDetails(
-                                        title: _allResources[index]['title'],
-                                        description: _allResources[index]
-                                            ['description'],
-                                        summary: _allResources[index]
-                                            ['summary'],
-                                      );
-                                    },
+                              onTap: () {},
+                              subtitle: Row(
+                                children: [
+                                  const Text('Email: '),
+                                  Text(
+                                    _allUsers[index]['email'],
                                   ),
-                                );
-                              },
-                              subtitle: Text(
-                                _allResources[index]['summary'],
-                                textAlign: TextAlign.justify,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                                ],
                               ),
                             ),
                           ],
@@ -152,12 +159,12 @@ class _ListResourcesState extends State<ListResources> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const CreateResource(),
+                builder: (context) => const CreateLawUser(),
               ),
             );
           },
           child: Icon(
-            Icons.add,
+            Icons.group_add,
             color: primaryRed,
           ),
         ),

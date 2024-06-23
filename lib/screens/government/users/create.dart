@@ -4,39 +4,36 @@ import 'package:flutter/material.dart';
 import 'package:ihuriro/models/api_response.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
-import 'package:ihuriro/services/resources.dart';
+import 'package:ihuriro/services/law_users.dart';
 
-class CreateResource extends StatefulWidget {
-  const CreateResource({super.key});
+class CreateLawUser extends StatefulWidget {
+  const CreateLawUser({super.key});
 
   @override
-  State<CreateResource> createState() => _CreateResourceState();
+  State<CreateLawUser> createState() => _CreateLawUserState();
 }
 
-class _CreateResourceState extends State<CreateResource> {
+class _CreateLawUserState extends State<CreateLawUser> {
   bool _loading = false;
 
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
-  TextEditingController title = TextEditingController();
-  TextEditingController summary = TextEditingController();
-  TextEditingController description = TextEditingController();
+  TextEditingController name = TextEditingController();
+  TextEditingController email = TextEditingController();
 
-  void registerResource() async {
+  void registerUser() async {
     ApiResponse response = await register(
-      title.text,
-      summary.text,
-      description.text,
+      name.text,
+      email.text,
     );
     if (response.error == null) {
       setState(() {
         _loading = false;
-        title.text = '';
-        summary.text = '';
-        description.text = '';
+        name.text = '';
+        email.text = '';
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Resource registered'),
+          content: Text('User registered'),
         ),
       );
     } else {
@@ -87,7 +84,7 @@ class _CreateResourceState extends State<CreateResource> {
                         ),
                       ),
                       const Text(
-                        'Create Resource',
+                        'Create Law User',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -116,15 +113,15 @@ class _CreateResourceState extends State<CreateResource> {
                   TextFormField(
                     validator: (val) {
                       if (val!.isEmpty) {
-                        return 'Title are required';
+                        return 'Names are required';
                       } else {
                         return null;
                       }
                     },
-                    controller: title,
+                    controller: name,
                     decoration: const InputDecoration(
-                      hintText: 'Enter title',
-                      labelText: 'Title',
+                      hintText: 'Enter names',
+                      labelText: 'names',
                     ),
                   ),
                   const SizedBox(
@@ -133,38 +130,15 @@ class _CreateResourceState extends State<CreateResource> {
                   TextFormField(
                     validator: (val) {
                       if (val!.isEmpty) {
-                        return 'Summary is required';
+                        return 'Email is required';
                       } else {
                         return null;
                       }
                     },
-                    controller: summary,
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
+                    controller: email,
                     decoration: const InputDecoration(
-                      hintText: 'Enter summary',
-                      labelText: 'Summary',
-                      alignLabelWithHint: true,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    validator: (val) {
-                      if (val!.isEmpty) {
-                        return 'Description is required';
-                      } else {
-                        return null;
-                      }
-                    },
-                    controller: description,
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter description',
-                      labelText: 'Description',
-                      alignLabelWithHint: true,
+                      hintText: 'Enter email',
+                      labelText: 'Email',
                     ),
                   ),
                   const SizedBox(
@@ -176,7 +150,7 @@ class _CreateResourceState extends State<CreateResource> {
                         setState(() {
                           _loading = true;
                         });
-                        registerResource();
+                        registerUser();
                       }
                     },
                     style: ButtonStyle(
@@ -194,7 +168,7 @@ class _CreateResourceState extends State<CreateResource> {
                               color: Colors.white,
                             )
                           : const Text(
-                              'Create',
+                              'Create User',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,

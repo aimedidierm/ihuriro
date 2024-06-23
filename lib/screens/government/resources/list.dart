@@ -24,7 +24,27 @@ class _ListResourcesState extends State<ListResources> {
       "title": "Emergency number",
       "description": "Habaye ikibazo gituma uhamagara wahagara kuri iyi nimero",
       "summary": "You can call 911",
-    }
+    },
+    {
+      "title": "Emergency number",
+      "description": "Habaye ikibazo gituma uhamagara wahagara kuri iyi nimero",
+      "summary": "You can call 911",
+    },
+    {
+      "title": "Emergency number",
+      "description": "Habaye ikibazo gituma uhamagara wahagara kuri iyi nimero",
+      "summary": "You can call 911",
+    },
+    {
+      "title": "Emergency number",
+      "description": "Habaye ikibazo gituma uhamagara wahagara kuri iyi nimero",
+      "summary": "You can call 911",
+    },
+    {
+      "title": "Emergency number",
+      "description": "Habaye ikibazo gituma uhamagara wahagara kuri iyi nimero",
+      "summary": "You can call 911",
+    },
   ];
 
   @override

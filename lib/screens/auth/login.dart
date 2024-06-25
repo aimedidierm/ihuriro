@@ -7,8 +7,10 @@ import 'package:ihuriro/models/api_response.dart';
 import 'package:ihuriro/models/user.dart';
 import 'package:ihuriro/screens/auth/register.dart';
 import 'package:ihuriro/screens/government/home.dart';
+import 'package:ihuriro/screens/law/home.dart';
 import 'package:ihuriro/screens/report/anonymous.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
+import 'package:ihuriro/screens/user/home.dart';
 import 'package:ihuriro/screens/utils/text_utils.dart';
 import 'package:ihuriro/services/auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,7 +48,32 @@ class _LoginState extends State<Login> {
             ),
             (route) => false);
       } else {
-        //navigate other types of users
+        if (user.role == "law") {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => const LawHome(),
+              ),
+              (route) => false);
+        } else {
+          if (user.role == "user") {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => const UserHome(),
+                ),
+                (route) => false);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Invalid role'),
+              ),
+            );
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => const Login(),
+                ),
+                (route) => false);
+          }
+        }
       }
     } else {
       setState(() {

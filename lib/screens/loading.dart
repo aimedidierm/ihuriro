@@ -3,7 +3,9 @@
 import 'package:ihuriro/screens/auth/login.dart';
 import 'package:flutter/material.dart';
 import 'package:ihuriro/screens/government/home.dart';
+import 'package:ihuriro/screens/law/home.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
+import 'package:ihuriro/screens/user/home.dart';
 import 'package:ihuriro/services/auth.dart';
 
 class Loading extends StatefulWidget {
@@ -32,12 +34,32 @@ class _LoadingState extends State<Loading> {
             ),
             (route) => false);
       } else {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => const Login(),
-          ),
-          (route) => false,
-        );
+        if (role == "law") {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => const LawHome(),
+              ),
+              (route) => false);
+        } else {
+          if (role == "user") {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => const UserHome(),
+                ),
+                (route) => false);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Invalid role'),
+              ),
+            );
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => const Login(),
+                ),
+                (route) => false);
+          }
+        }
       }
     }
   }

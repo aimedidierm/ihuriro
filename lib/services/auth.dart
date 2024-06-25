@@ -42,6 +42,42 @@ Future<ApiResponse> login(String email, String password) async {
   return apiResponse;
 }
 
+Future<ApiResponse> register(String name, String email) async {
+  ApiResponse apiResponse = ApiResponse();
+  try {
+    final response = await http.post(Uri.parse(registerURL),
+        headers: {'Accept': 'application/json'},
+        body: {'name': name, 'email': email});
+
+    switch (response.statusCode) {
+      case 200:
+        apiResponse.data = User.fromJson(jsonDecode(response.body));
+        break;
+      case 401:
+        final errors = jsonDecode(response.body)['error'];
+        apiResponse.error = errors;
+        break;
+      case 422:
+        final errors = jsonDecode(response.body)['message'];
+        apiResponse.error = errors;
+        break;
+      case 403:
+        apiResponse.error = jsonDecode(response.body)['message'];
+        break;
+      case 404:
+        apiResponse.error = jsonDecode(response.body)['message'];
+        break;
+      default:
+        apiResponse.error = 'Something went wrong';
+        break;
+    }
+  } catch (e) {
+    apiResponse.error = 'Server error';
+  }
+
+  return apiResponse;
+}
+
 Future<String> getToken() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   return pref.getString('token') ?? '';

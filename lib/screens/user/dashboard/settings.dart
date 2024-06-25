@@ -9,16 +9,14 @@ import 'package:ihuriro/screens/widgets/appbar.dart';
 import 'package:ihuriro/services/auth.dart';
 import 'package:http/http.dart' as http;
 
-class GovernmentDashboardSetting extends StatefulWidget {
-  const GovernmentDashboardSetting({super.key});
+class UserDashboardSettings extends StatefulWidget {
+  const UserDashboardSettings({super.key});
 
   @override
-  State<GovernmentDashboardSetting> createState() =>
-      _GovernmentDashboardSettingState();
+  State<UserDashboardSettings> createState() => _UserDashboardSettingsState();
 }
 
-class _GovernmentDashboardSettingState
-    extends State<GovernmentDashboardSetting> {
+class _UserDashboardSettingsState extends State<UserDashboardSettings> {
   bool _loading = false;
   bool loadingContent = true;
   bool showReport = false;
@@ -34,8 +32,8 @@ class _GovernmentDashboardSettingState
     bool option4,
   ) async {
     String token = await getToken();
-    final response = await http
-        .put(Uri.parse('$governmentSettingsURL/$dashboardId'), headers: {
+    final response =
+        await http.put(Uri.parse('$userSettingsURL/$dashboardId'), headers: {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
     }, body: {
@@ -104,7 +102,7 @@ class _GovernmentDashboardSettingState
 
   Future<void> fetchData() async {
     String token = await getToken();
-    final response = await http.get(Uri.parse(governmentSettingsURL), headers: {
+    final response = await http.get(Uri.parse(userSettingsURL), headers: {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token'
     });
@@ -247,8 +245,7 @@ class _GovernmentDashboardSettingState
                           ),
                   ),
                 ],
-              ),
-            ),
+              )),
     );
   }
 

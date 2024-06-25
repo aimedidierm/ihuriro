@@ -8,14 +8,14 @@ import 'package:ihuriro/services/crime.dart';
 
 enum ReportType { crime, oridinary, weather }
 
-class Anonymous extends StatefulWidget {
-  const Anonymous({super.key});
+class ReportCrime extends StatefulWidget {
+  const ReportCrime({super.key});
 
   @override
-  State<Anonymous> createState() => _AnonymousState();
+  State<ReportCrime> createState() => _ReportCrimeState();
 }
 
-class _AnonymousState extends State<Anonymous> {
+class _ReportCrimeState extends State<ReportCrime> {
   bool _loading = false;
 
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
@@ -25,7 +25,7 @@ class _AnonymousState extends State<Anonymous> {
   ReportType? _selectedReport;
 
   void reportCrime() async {
-    ApiResponse response = await register(
+    ApiResponse response = await userRegister(
       title.text,
       description.text,
       getEnumValue(_selectedReport),
@@ -92,7 +92,7 @@ class _AnonymousState extends State<Anonymous> {
                         ),
                       ),
                       const Text(
-                        "Create anonymous report",
+                        "Create report",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,

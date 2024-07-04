@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:ihuriro/screens/auth/settings.dart';
+import 'package:ihuriro/constants/api_constants.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
+import 'package:ihuriro/screens/user/crimes/create.dart';
 import 'package:ihuriro/screens/user/dashboard/settings.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
+import 'package:http/http.dart' as http;
+import 'package:ihuriro/services/auth.dart';
 
 class UserDashboard extends StatefulWidget {
   const UserDashboard({super.key});
@@ -12,6 +17,61 @@ class UserDashboard extends StatefulWidget {
 }
 
 class _UserDashboardState extends State<UserDashboard> {
+  bool loading = true;
+  bool showReport = false;
+  bool showReported = false;
+  bool showSurveys = false;
+  bool showUnread = false;
+  int reports = 0, reported = 0, surveys = 0, unread = 0;
+
+  Future<void> fetchData() async {
+    String token = await getToken();
+    final response = await http.get(Uri.parse(userURL), headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    });
+
+    if (response.statusCode == 200) {
+      final decodedResponse = json.decode(response.body);
+      setState(() {
+        reports = decodedResponse['reports'];
+        reported = decodedResponse['reported'];
+        surveys = decodedResponse['surveys'];
+        unread = decodedResponse['unread'];
+        loading = false;
+      });
+    } else {
+      // print('Request failed with status: ${response.statusCode}.');
+    }
+  }
+
+  Future<void> fetchDashboardSettings() async {
+    String token = await getToken();
+    final response = await http.get(Uri.parse(userSettingsURL), headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    });
+
+    if (response.statusCode == 200) {
+      final decodedResponse = json.decode(response.body)['dashboard_details'];
+      setState(() {
+        showReport = decodedResponse['option_1'];
+        showReported = decodedResponse['option_2'];
+        showSurveys = decodedResponse['option_3'];
+        showUnread = decodedResponse['option_4'];
+      });
+    } else {
+      // print('Request failed with status: ${response.statusCode}.');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDashboardSettings();
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,15 +114,292 @@ class _UserDashboardState extends State<UserDashboard> {
           ),
         ),
       ),
-      body: Center(
-        child: CircularProgressIndicator(
-          color: primaryRed,
-        ),
-      ),
+      body: loading
+          ? Center(
+              child: CircularProgressIndicator(
+                color: primaryRed,
+              ),
+            )
+          : ListView(
+              children: [
+                showReport
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        child: GestureDetector(
+                          onTap: () {
+                            // Navigator.of(context).push(
+                            //   MaterialPageRoute(
+                            //     builder: (BuildContext context) {
+                            //       return const ListReports();
+                            //     },
+                            //   ),
+                            // );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: primaryPink,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const SizedBox(width: 10),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Icon(
+                                        Icons.copy,
+                                        color: primaryRed,
+                                        size: 40,
+                                      ),
+                                    ],
+                                  ),
+                                  Row(children: [
+                                    Text(
+                                      reports.toString(),
+                                      style: TextStyle(
+                                        color: primaryRed,
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      'Reports',
+                                      style: TextStyle(
+                                        color: primaryRed,
+                                        fontSize: 40,
+                                      ),
+                                    ),
+                                  ])
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : const SizedBox(),
+                showReported
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        child: GestureDetector(
+                          onTap: () {
+                            // Navigator.of(context).push(
+                            //   MaterialPageRoute(
+                            //     builder: (BuildContext context) {
+                            //       return const ListReports();
+                            //     },
+                            //   ),
+                            // );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.brown,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SizedBox(width: 10),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Icon(
+                                        Icons.warning_amber_rounded,
+                                        color: Colors.white,
+                                        size: 40,
+                                      ),
+                                    ],
+                                  ),
+                                  Row(children: [
+                                    Text(
+                                      reported.toString(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Text(
+                                      'Reported',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 40,
+                                      ),
+                                    ),
+                                  ])
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : const SizedBox(),
+                showSurveys
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 20,
+                        ),
+                        child: GestureDetector(
+                          onTap: () {
+                            // Navigator.of(context).push(
+                            //   MaterialPageRoute(
+                            //     builder: (BuildContext context) {
+                            //       return const ListReports();
+                            //     },
+                            //   ),
+                            // );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SizedBox(width: 10),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Icon(
+                                        Icons.format_align_center,
+                                        color: Colors.white,
+                                        size: 40,
+                                      ),
+                                    ],
+                                  ),
+                                  Row(children: [
+                                    Text(
+                                      surveys.toString(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Text(
+                                      'Surveys',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 40,
+                                      ),
+                                    ),
+                                  ])
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : const SizedBox(),
+                showUnread
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 20,
+                        ),
+                        child: GestureDetector(
+                          onTap: () {
+                            // Navigator.of(context).push(
+                            //   MaterialPageRoute(
+                            //     builder: (BuildContext context) {
+                            //       return const ListReports();
+                            //     },
+                            //   ),
+                            // );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.indigo,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SizedBox(width: 10),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Icon(
+                                        Icons.message,
+                                        color: Colors.white,
+                                        size: 40,
+                                      ),
+                                    ],
+                                  ),
+                                  Row(children: [
+                                    Text(
+                                      unread.toString(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Text(
+                                      'Unread',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 40,
+                                      ),
+                                    ),
+                                  ])
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : const SizedBox(),
+              ],
+            ),
       floatingActionButton: Stack(
         children: [
           Positioned(
-            bottom: 70,
+            bottom: 0,
             right: 16,
             child: FloatingActionButton(
               onPressed: () {
@@ -80,19 +417,19 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
           ),
           Positioned(
-            bottom: 0,
+            bottom: 70,
             right: 16,
             child: FloatingActionButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Settings(),
+                    builder: (context) => const ReportCrime(),
                   ),
                 );
               },
               child: Icon(
-                Icons.settings,
+                Icons.add,
                 color: primaryRed,
               ),
             ),

@@ -92,7 +92,7 @@ class _ReportCrimeState extends State<ReportCrime> {
                         ),
                       ),
                       const Text(
-                        "Create report",
+                        "Report Crime",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,

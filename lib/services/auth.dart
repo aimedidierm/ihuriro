@@ -32,6 +32,7 @@ Future<ApiResponse> login(String email, String password) async {
         apiResponse.error = jsonDecode(response.body)['message'];
         break;
       default:
+        print(response.body);
         apiResponse.error = 'Something went wrong';
         break;
     }

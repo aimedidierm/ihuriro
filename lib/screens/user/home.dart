@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:ihuriro/screens/government/map/view.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/user/chat/list.dart';
-import 'package:ihuriro/screens/user/crimes/list.dart';
 import 'package:ihuriro/screens/user/dashboard/dashboard.dart';
 import 'package:ihuriro/screens/user/resources/list.dart';
 import 'package:ihuriro/screens/user/survey/list.dart';
@@ -20,7 +20,7 @@ class _UserHomeState extends State<UserHome> {
   static List<Widget> page = [
     const UserDashboard(),
     const ListChats(),
-    const ListCrimes(),
+    const ViewMap(),
     const ListSurvey(),
     const ListResources(),
   ];

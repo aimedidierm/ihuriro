@@ -1,12 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:ihuriro/models/api_response.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
 import 'package:ihuriro/services/crime.dart';
+import 'dart:io';
 
-enum ReportType { crime, oridinary, weather }
+enum ReportType { crime, ordinary, weather }
 
 class ReportCrime extends StatefulWidget {
   const ReportCrime({super.key});
@@ -17,24 +19,30 @@ class ReportCrime extends StatefulWidget {
 
 class _ReportCrimeState extends State<ReportCrime> {
   bool _loading = false;
+  XFile? imageFile;
 
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   TextEditingController title = TextEditingController();
   TextEditingController description = TextEditingController();
-
   ReportType? _selectedReport;
 
   void reportCrime() async {
+    setState(() {
+      _loading = true;
+    });
+
     ApiResponse response = await userRegister(
       title.text,
       description.text,
       getEnumValue(_selectedReport),
+      imageFile,
     );
     if (response.error == null) {
       setState(() {
         _loading = false;
         title.text = '';
         description.text = '';
+        imageFile = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -123,7 +131,7 @@ class _ReportCrimeState extends State<ReportCrime> {
                   TextFormField(
                     validator: (val) {
                       if (val!.isEmpty) {
-                        return 'Title are required';
+                        return 'Title is required';
                       } else {
                         return null;
                       }
@@ -185,6 +193,37 @@ class _ReportCrimeState extends State<ReportCrime> {
                   const SizedBox(
                     height: 20,
                   ),
+                  imageFile != null
+                      ? Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: Image.file(File(imageFile!.path)),
+                        )
+                      : TextButton(
+                          onPressed: () {
+                            getImage(ImageSource.camera);
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(
+                              vertical: 5,
+                              horizontal: 5,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.camera_alt,
+                                  color: primaryRed,
+                                  size: 30,
+                                ),
+                                Text(
+                                  "Take picture",
+                                  style: TextStyle(
+                                      fontSize: 13, color: Colors.grey[600]),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
                   TextButton(
                     onPressed: () {
                       if (formkey.currentState!.validate()) {
@@ -224,5 +263,19 @@ class _ReportCrimeState extends State<ReportCrime> {
         ],
       ),
     );
+  }
+
+  void getImage(ImageSource source) async {
+    try {
+      final pickedImage = await ImagePicker().pickImage(source: source);
+      if (pickedImage != null) {
+        setState(() {
+          imageFile = pickedImage;
+        });
+      }
+    } catch (e) {
+      imageFile = null;
+      setState(() {});
+    }
   }
 }

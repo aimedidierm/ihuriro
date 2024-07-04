@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:ihuriro/constants/api_constants.dart';
 import 'package:ihuriro/screens/government/map/view.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
 
 class CrimeDetails extends StatefulWidget {
-  final String title, description, location, type, status;
+  final String title, description, location, type, status, image;
   const CrimeDetails({
     Key? key,
     required this.title,
@@ -12,6 +13,7 @@ class CrimeDetails extends StatefulWidget {
     required this.location,
     required this.type,
     required this.status,
+    required this.image,
   }) : super(key: key);
 
   @override
@@ -104,6 +106,24 @@ class _CrimeDetailsState extends State<CrimeDetails> {
               height: 20,
             ),
             Text(widget.description),
+            Image.network(
+              '$appURL${widget.image}',
+              loadingBuilder: (BuildContext context, Widget child,
+                  ImageChunkEvent? loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                }
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: primaryRed,
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              },
+            ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).push(
@@ -126,6 +146,27 @@ class _CrimeDetailsState extends State<CrimeDetails> {
                 padding: EdgeInsets.symmetric(horizontal: 60),
                 child: Text(
                   'View Location',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {},
+              style: ButtonStyle(
+                backgroundColor: MaterialStateColor.resolveWith(
+                  (states) => primaryRed,
+                ),
+                padding: MaterialStateProperty.resolveWith(
+                  (states) => const EdgeInsets.symmetric(vertical: 10),
+                ),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 60),
+                child: Text(
+                  'Contact reporter',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,

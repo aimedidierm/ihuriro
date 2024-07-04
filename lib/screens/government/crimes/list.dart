@@ -127,6 +127,8 @@ class _ListReportedCrimesState extends State<ListReportedCrimes> {
                                             ['location'],
                                         type: _allReported[index]['type'],
                                         status: _allReported[index]['status'],
+                                        image: _allReported[index]['file']
+                                            ['document'],
                                       );
                                     },
                                   ),

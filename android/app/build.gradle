@@ -19,12 +19,11 @@ def loadEnvProperties() {
     def properties = new Properties()
     def envFile = rootProject.file('../.env')
     if (envFile.exists()) {
-        println ".env file found"
         envFile.withInputStream { stream ->
             properties.load(stream)
         }
     } else {
-        println ".env file does not exist at: ${envFile.absolutePath}"
+        // println ".env file does not exist at: ${envFile.absolutePath}"
     }
     return properties
 }

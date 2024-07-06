@@ -28,3 +28,8 @@ const userSettingsURL = '$userURL/settings';
 const userReportedURL = '$userURL/reported';
 const userResourcesURL = '$userURL/resources';
 const userSurveysURL = '$userURL/surveys';
+
+const chatURL = '$baseURL/chat';
+const listingChatURL = '$chatURL/listing';
+const chatRoomURL = '$chatURL/chat-room';
+const sendMessageURL = '$chatURL/send-message';

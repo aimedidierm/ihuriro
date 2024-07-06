@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:ihuriro/constants/api_constants.dart';
 import 'package:ihuriro/screens/law/chat/chat_room.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
+import 'package:http/http.dart' as http;
+import 'package:ihuriro/services/auth.dart';
 
 class ListChats extends StatefulWidget {
   const ListChats({super.key});
@@ -11,13 +16,37 @@ class ListChats extends StatefulWidget {
 }
 
 class _ListChatsState extends State<ListChats> {
-  final List<Map<String, String>> messages = [
-    {'name': 'Alice', 'message': 'Hello! How are you?'},
-    {'name': 'Bob', 'message': 'Are you coming to the party?'},
-    {'name': 'Charlie', 'message': 'Don\'t forget the meeting tomorrow.'},
-    {'name': 'David', 'message': 'Check out this cool link!'},
-    {'name': 'Eve', 'message': 'Happy Birthday!'},
-  ];
+  bool _loading = true;
+
+  List<Map<String, dynamic>> _allChats = [];
+
+  Future<void> fetchData() async {
+    String token = await getToken();
+    final response = await http.get(Uri.parse(listingChatURL), headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    });
+
+    if (response.statusCode == 200) {
+      final decodedResponse = json.decode(response.body);
+      final List<dynamic> decodedChats = decodedResponse['chats'];
+      final List<Map<String, dynamic>> chats =
+          List<Map<String, dynamic>>.from(decodedChats);
+      setState(() {
+        _allChats = chats;
+        _loading = false;
+      });
+    } else {
+      // print('Request failed with status: ${response.statusCode}.');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,40 +102,66 @@ class _ListChatsState extends State<ListChats> {
           ),
         ),
       ),
-      body: ListView.builder(
-        itemCount: messages.length,
-        itemBuilder: (context, index) {
-          return Card(
-            elevation: 2.0,
-            margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 0.0),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: primaryRed,
-                child: Text(
-                  messages[index]['name']![0],
-                  style: const TextStyle(color: Colors.white),
+      body: Center(
+        child: _loading
+            ? Center(
+                child: CircularProgressIndicator(
+                  color: primaryRed,
                 ),
-              ),
-              title: Text(
-                messages[index]['name']!,
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: primaryRed),
-              ),
-              subtitle: Text(messages[index]['message']!),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChatRoom(
-                      name: messages[index]['name']!,
-                      message: messages[index]['message']!,
+              )
+            : ListView.builder(
+                itemCount: _allChats.length,
+                itemBuilder: (context, index) {
+                  var name = 'Mugisha';
+                  int id = 0;
+                  var chat = _allChats[index];
+                  var messageUser = chat['message_user'];
+                  if (chat['user'] != null) {
+                    name = chat['user']['name'];
+                    id = chat['user']['id'];
+                  }
+                  if (chat['receiver'] != null) {
+                    name = chat['receiver']['name'];
+                    id = chat['receiver']['id'];
+                  }
+                  return Card(
+                    elevation: 2.0,
+                    color:
+                        (messageUser != null && messageUser['is_read'] == false)
+                            ? primaryRed.withOpacity(0.3)
+                            : null,
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 3, horizontal: 0.0),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: primaryRed,
+                        child: Text(
+                          name[0],
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      title: Text(
+                        name,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: primaryRed),
+                      ),
+                      subtitle: Text(_allChats[index]['content']),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChatRoomScreen(
+                              receiver: id,
+                              name: name,
+                              message: chat['content']!,
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                );
-              },
-            ),
-          );
-        },
+                  );
+                },
+              ),
       ),
     );
   }

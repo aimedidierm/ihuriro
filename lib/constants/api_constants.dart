@@ -33,3 +33,6 @@ const chatURL = '$baseURL/chat';
 const listingChatURL = '$chatURL/listing';
 const chatRoomURL = '$chatURL/chat-room';
 const sendMessageURL = '$chatURL/send-message';
+
+// const reportedsURL = '$baseURL/reporteds';
+const reportedsURL = userReportedURL;

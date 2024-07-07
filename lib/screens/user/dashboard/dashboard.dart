@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ihuriro/constants/api_constants.dart';
+import 'package:ihuriro/constants/app_constants.dart';
 import 'package:ihuriro/screens/auth/settings.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/user/crimes/create.dart';
@@ -10,6 +12,8 @@ import 'package:ihuriro/screens/user/dashboard/settings.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:ihuriro/services/auth.dart';
+import 'package:intl/intl.dart';
+import 'package:weather/weather.dart';
 
 class UserDashboard extends StatefulWidget {
   const UserDashboard({super.key});
@@ -25,6 +29,10 @@ class _UserDashboardState extends State<UserDashboard> {
   bool showSurveys = false;
   bool showUnread = false;
   int reports = 0, reported = 0, surveys = 0, unread = 0;
+
+  final WeatherFactory _wf = WeatherFactory(OPENWEATHER_API_KEY);
+
+  Weather? _weather;
 
   Future<void> fetchData() async {
     String token = await getToken();
@@ -70,6 +78,11 @@ class _UserDashboardState extends State<UserDashboard> {
   @override
   void initState() {
     super.initState();
+    _wf.currentWeatherByCityName("Kigali").then((w) {
+      setState(() {
+        _weather = w;
+      });
+    });
     fetchDashboardSettings();
     fetchData();
   }
@@ -141,65 +154,29 @@ class _UserDashboardState extends State<UserDashboard> {
                           horizontal: 20,
                           vertical: 10,
                         ),
-                        child: GestureDetector(
-                          onTap: () {
-                            // Navigator.of(context).push(
-                            //   MaterialPageRoute(
-                            //     builder: (BuildContext context) {
-                            //       return const ListReports();
-                            //     },
-                            //   ),
-                            // );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: primaryPink,
-                              borderRadius: BorderRadius.circular(10),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            _locationHeader(),
+                            SizedBox(
+                              height: MediaQuery.sizeOf(context).height * 0.00,
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(20.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const SizedBox(width: 10),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Icon(
-                                        Icons.copy,
-                                        color: primaryRed,
-                                        size: 40,
-                                      ),
-                                    ],
-                                  ),
-                                  Row(children: [
-                                    Text(
-                                      reports.toString(),
-                                      style: TextStyle(
-                                        color: primaryRed,
-                                        fontSize: 40,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      'Reports',
-                                      style: TextStyle(
-                                        color: primaryRed,
-                                        fontSize: 40,
-                                      ),
-                                    ),
-                                  ])
-                                ],
-                              ),
+                            _dateTimeInfo(),
+                            SizedBox(
+                              height: MediaQuery.sizeOf(context).height * 0.00,
                             ),
-                          ),
+                            _weatherIcon(),
+                            SizedBox(
+                              height: MediaQuery.sizeOf(context).height * 0.00,
+                            ),
+                            _currentTemp(),
+                            SizedBox(
+                              height: MediaQuery.sizeOf(context).height * 0.00,
+                            ),
+                            _extraInfo(),
+                          ],
                         ),
                       )
                     : const SizedBox(),
@@ -446,6 +423,144 @@ class _UserDashboardState extends State<UserDashboard> {
                 color: primaryRed,
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _locationHeader() {
+    return Text(
+      _weather!.areaName ?? "",
+      style: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _dateTimeInfo() {
+    DateTime now = _weather!.date!;
+    return Column(
+      children: [
+        Text(
+          DateFormat("h:mm a").format(now),
+          style: const TextStyle(
+            fontSize: 34,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              DateFormat("EEEE").format(now),
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Text(
+              "  ${DateFormat("d,m.y").format(now)}",
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _weatherIcon() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          height: 200,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: NetworkImage(
+                    "https://openweathermap.org/img/wn/${_weather?.weatherIcon}@4x.png")),
+          ),
+        ),
+        Text(
+          _weather?.weatherDescription ?? '',
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _currentTemp() {
+    return Text(
+      "${_weather?.temperature?.celsius?.toStringAsFixed(0)}° C",
+      style: const TextStyle(
+        color: Colors.black,
+        fontSize: 90,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+
+  Widget _extraInfo() {
+    return Container(
+      height: MediaQuery.sizeOf(context).height * 0.15,
+      width: MediaQuery.sizeOf(context).width * 0.80,
+      decoration: BoxDecoration(
+        color: primaryRed,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Max: ${_weather?.tempMax?.celsius?.toStringAsFixed(0)}° C ",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                ),
+              ),
+              Text(
+                "Min: ${_weather?.tempMin?.celsius?.toStringAsFixed(0)}° C ",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Wind: ${_weather?.windSpeed?.toStringAsFixed(0)}m/s",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                ),
+              ),
+              Text(
+                "Humidity: ${_weather?.humidity?.toStringAsFixed(0)}%",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                ),
+              ),
+            ],
           ),
         ],
       ),

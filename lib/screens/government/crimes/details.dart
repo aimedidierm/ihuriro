@@ -5,12 +5,14 @@ import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
 
 class CrimeDetails extends StatefulWidget {
-  final String title, description, location, type, status, image;
+  final String title, description, type, status, image;
+  final locationLatitude, locationLongitude;
   const CrimeDetails({
     Key? key,
     required this.title,
     required this.description,
-    required this.location,
+    required this.locationLatitude,
+    required this.locationLongitude,
     required this.type,
     required this.status,
     required this.image,

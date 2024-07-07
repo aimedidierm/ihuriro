@@ -186,7 +186,7 @@ class _UserDashboardSettingsState extends State<UserDashboardSettings> {
               child: ListView(
                 children: [
                   buildSwitchListTile(
-                    title: 'Show reports',
+                    title: 'Show weather',
                     value: showReport,
                     onChanged: (newValue) {
                       setState(() {

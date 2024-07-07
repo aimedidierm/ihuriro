@@ -123,8 +123,10 @@ class _ListReportedCrimesState extends State<ListReportedCrimes> {
                                         title: _allReported[index]['title'],
                                         description: _allReported[index]
                                             ['description'],
-                                        location: _allReported[index]
-                                            ['location'],
+                                        locationLatitude: _allReported[index]
+                                            ['location_latitude'],
+                                        locationLongitude: _allReported[index]
+                                            ['location_longitude'],
                                         type: _allReported[index]['type'],
                                         status: _allReported[index]['status'],
                                         image: _allReported[index]['file']

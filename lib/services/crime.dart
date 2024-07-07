@@ -11,29 +11,39 @@ Future<ApiResponse> register(
   String? title,
   String? description,
   String? type,
+  XFile? image,
+  String? locationLatitude,
+  String? locationLongitude,
 ) async {
   ApiResponse apiResponse = ApiResponse();
   try {
-    final response = await http.post(Uri.parse(annonymousURL), headers: {
-      'Accept': 'application/json',
-    }, body: {
-      'title': title,
-      'description': description,
-      'location': 'location',
-      'type': type,
-    });
+    var request = http.MultipartRequest('POST', Uri.parse(annonymousURL))
+      ..headers['Accept'] = 'application/json'
+      ..fields['title'] = title ?? ''
+      ..fields['description'] = description ?? ''
+      ..fields['location_latitude'] = locationLatitude ?? ''
+      ..fields['location_longitude'] = locationLongitude ?? ''
+      ..fields['type'] = type ?? '';
+
+    if (image != null) {
+      request.files.add(await http.MultipartFile.fromPath('image', image.path));
+    }
+
+    var response = await request.send();
+    var responseData = await http.Response.fromStream(response);
+
     switch (response.statusCode) {
       case 200:
         apiResponse.data = "Crime registered";
         break;
       case 401:
-        apiResponse.error = jsonDecode(response.body)['message'];
+        apiResponse.error = jsonDecode(responseData.body)['message'];
         break;
       case 422:
-        apiResponse.error = jsonDecode(response.body)['message'];
+        apiResponse.error = jsonDecode(responseData.body)['message'];
         break;
       case 403:
-        apiResponse.error = jsonDecode(response.body)['message'];
+        apiResponse.error = jsonDecode(responseData.body)['message'];
         break;
       case 500:
         apiResponse.error = 'Server error';
@@ -54,6 +64,8 @@ Future<ApiResponse> userRegister(
   String? description,
   String? type,
   XFile? image,
+  String? locationLatitude,
+  String? locationLongitude,
 ) async {
   ApiResponse apiResponse = ApiResponse();
   try {
@@ -63,7 +75,8 @@ Future<ApiResponse> userRegister(
       ..headers['Accept'] = 'application/json'
       ..fields['title'] = title ?? ''
       ..fields['description'] = description ?? ''
-      ..fields['location'] = 'location'
+      ..fields['location_latitude'] = locationLatitude ?? ''
+      ..fields['location_longitude'] = locationLongitude ?? ''
       ..fields['type'] = type ?? '';
 
     if (image != null) {

@@ -20,6 +20,8 @@ class ReportCrime extends StatefulWidget {
 class _ReportCrimeState extends State<ReportCrime> {
   bool _loading = false;
   XFile? imageFile;
+  String locationLatitude = '-1.9462';
+  String locationLongitude = '30.0614';
 
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   TextEditingController title = TextEditingController();
@@ -36,6 +38,8 @@ class _ReportCrimeState extends State<ReportCrime> {
       description.text,
       getEnumValue(_selectedReport),
       imageFile,
+      locationLatitude,
+      locationLongitude,
     );
     if (response.error == null) {
       setState(() {

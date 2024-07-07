@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:ihuriro/screens/government/map/view.dart';
+import 'package:ihuriro/screens/view_map.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/user/chat/list.dart';
 import 'package:ihuriro/screens/user/dashboard/dashboard.dart';

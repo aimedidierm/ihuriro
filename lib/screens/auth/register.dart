@@ -68,7 +68,7 @@ class _RegisterState extends State<Register> {
         ),
         alignment: Alignment.center,
         child: Container(
-          height: 400,
+          height: 460,
           width: double.infinity,
           margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
           decoration: BoxDecoration(
@@ -84,7 +84,7 @@ class _RegisterState extends State<Register> {
                 key: formkey,
                 child: Padding(
                   padding: const EdgeInsets.all(25),
-                  child: ListView(
+                  child: Column(
                     children: [
                       const Spacer(),
                       Center(

@@ -462,7 +462,7 @@ class _UserDashboardState extends State<UserDashboard> {
               ),
             ),
             Text(
-              "  ${DateFormat("d,m.y").format(now)}",
+              "  ${DateFormat("dd,MM y").format(now)}",
               style: const TextStyle(
                 fontWeight: FontWeight.w700,
               ),

@@ -131,6 +131,10 @@ class _ListReportedCrimesState extends State<ListReportedCrimes> {
                                         status: _allReported[index]['status'],
                                         image: _allReported[index]['file']
                                             ['document'],
+                                        name: _allReported[index]['user']
+                                            ['name'],
+                                        receiver: _allReported[index]['user']
+                                            ['id'],
                                       );
                                     },
                                   ),

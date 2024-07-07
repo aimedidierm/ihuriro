@@ -12,12 +12,10 @@ import 'package:ihuriro/services/message.dart';
 class ChatRoomScreen extends StatefulWidget {
   final int receiver;
   final String name;
-  final String message;
 
   ChatRoomScreen({
     required this.receiver,
     required this.name,
-    required this.message,
   });
 
   @override

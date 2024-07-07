@@ -154,7 +154,6 @@ class _ListChartsState extends State<ListCharts> {
                             builder: (context) => ChatRoomScreen(
                               receiver: id,
                               name: name,
-                              message: chat['content']!,
                             ),
                           ),
                         );

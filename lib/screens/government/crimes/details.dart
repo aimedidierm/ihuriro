@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:ihuriro/constants/api_constants.dart';
+import 'package:ihuriro/screens/government/chat/chat_room.dart';
 import 'package:ihuriro/screens/government/map/view.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
 
 class CrimeDetails extends StatefulWidget {
-  final String title, description, type, status, image;
+  final String title, description, type, status, image, name;
+  final int receiver;
   final locationLatitude, locationLongitude;
   const CrimeDetails({
     Key? key,
@@ -16,6 +18,8 @@ class CrimeDetails extends StatefulWidget {
     required this.type,
     required this.status,
     required this.image,
+    required this.receiver,
+    required this.name,
   }) : super(key: key);
 
   @override
@@ -156,7 +160,18 @@ class _CrimeDetailsState extends State<CrimeDetails> {
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) {
+                      return ChatRoomScreen(
+                        receiver: widget.receiver,
+                        name: widget.name,
+                      );
+                    },
+                  ),
+                );
+              },
               style: ButtonStyle(
                 backgroundColor: MaterialStateColor.resolveWith(
                   (states) => primaryRed,

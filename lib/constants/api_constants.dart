@@ -1,6 +1,5 @@
 const appURL = 'https://ihuriro.aimedidierm.xyz';
 const baseURL = 'https://ihuriro.aimedidierm.xyz/api';
-// const baseURL = 'https://2e51-41-186-78-127.ngrok-free.app/api';
 
 const loginURL = '$baseURL/login';
 const logoutURL = '$baseURL/logout';

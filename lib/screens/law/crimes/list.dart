@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ihuriro/constants/api_constants.dart';
 import 'package:ihuriro/screens/government/crimes/details.dart';
-import 'package:ihuriro/screens/government/map/view.dart';
+import 'package:ihuriro/screens/law/crimes/map.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
 import 'package:ihuriro/services/auth.dart';

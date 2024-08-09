@@ -112,7 +112,7 @@ class _ViewMapState extends State<ViewMap> {
 
   Future<void> loadReports() async {
     String token = await getToken();
-    final response = await http.get(Uri.parse(governmentReportedURL), headers: {
+    final response = await http.get(Uri.parse(userReportedURL), headers: {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token'
     });

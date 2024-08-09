@@ -1,4 +1,5 @@
-// ignore_for_file: use_build_context_synchronously
+import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,9 +7,9 @@ import 'package:ihuriro/models/api_response.dart';
 import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
 import 'package:ihuriro/services/crime.dart';
-import 'dart:io';
+import 'package:location/location.dart';
 
-enum ReportType { crime, ordinary, weather }
+enum ReportType { crime, oridinary, weather }
 
 class ReportCrime extends StatefulWidget {
   const ReportCrime({super.key});
@@ -20,15 +21,38 @@ class ReportCrime extends StatefulWidget {
 class _ReportCrimeState extends State<ReportCrime> {
   bool _loading = false;
   XFile? imageFile;
-  String locationLatitude = '-1.9462';
-  String locationLongitude = '30.0614';
+  String? locationLatitude;
+  String? locationLongitude;
 
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   TextEditingController title = TextEditingController();
   TextEditingController description = TextEditingController();
   ReportType? _selectedReport;
+  final Location _locationController = Location();
+  StreamSubscription<LocationData>? _locationSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _getLocationUpdates();
+  }
+
+  @override
+  void dispose() {
+    _locationSubscription?.cancel();
+    super.dispose();
+  }
 
   void reportCrime() async {
+    if (locationLatitude == null || locationLongitude == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Location is required'),
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _loading = true;
     });
@@ -38,9 +62,10 @@ class _ReportCrimeState extends State<ReportCrime> {
       description.text,
       getEnumValue(_selectedReport),
       imageFile,
-      locationLatitude,
-      locationLongitude,
+      locationLatitude!,
+      locationLongitude!,
     );
+
     if (response.error == null) {
       setState(() {
         _loading = false;
@@ -72,6 +97,32 @@ class _ReportCrimeState extends State<ReportCrime> {
     return '';
   }
 
+  void _getLocationUpdates() async {
+    bool serviceEnabled = await _locationController.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await _locationController.requestService();
+      if (!serviceEnabled) return;
+    }
+
+    PermissionStatus permissionGranted =
+        await _locationController.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await _locationController.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) return;
+    }
+
+    _locationSubscription = _locationController.onLocationChanged
+        .listen((LocationData currentLocation) {
+      if (currentLocation.latitude != null &&
+          currentLocation.longitude != null) {
+        setState(() {
+          locationLatitude = currentLocation.latitude.toString();
+          locationLongitude = currentLocation.longitude.toString();
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,7 +146,7 @@ class _ReportCrimeState extends State<ReportCrime> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pop(context);
+                          Navigator.of(context).pop();
                         },
                         child: const Icon(
                           Icons.arrow_back,
@@ -202,31 +253,64 @@ class _ReportCrimeState extends State<ReportCrime> {
                           padding: const EdgeInsets.only(bottom: 20),
                           child: Image.file(File(imageFile!.path)),
                         )
-                      : TextButton(
-                          onPressed: () {
-                            getImage(ImageSource.camera);
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 5,
-                              horizontal: 5,
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.camera_alt,
-                                  color: primaryRed,
-                                  size: 30,
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                getImage(ImageSource.camera);
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                  vertical: 5,
+                                  horizontal: 5,
                                 ),
-                                Text(
-                                  "Take picture",
-                                  style: TextStyle(
-                                      fontSize: 13, color: Colors.grey[600]),
-                                )
-                              ],
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.camera_alt,
+                                      color: primaryRed,
+                                      size: 30,
+                                    ),
+                                    Text(
+                                      "Take picture",
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey[600]),
+                                    )
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
+                            TextButton(
+                              onPressed: () {
+                                getImage(ImageSource.gallery);
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                  vertical: 5,
+                                  horizontal: 5,
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.upload_file,
+                                      color: primaryRed,
+                                      size: 30,
+                                    ),
+                                    Text(
+                                      "Upload picture",
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey[600]),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                   TextButton(
                     onPressed: () {

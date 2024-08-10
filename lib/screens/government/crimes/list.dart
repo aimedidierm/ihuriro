@@ -1,4 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:ihuriro/constants/api_constants.dart';
@@ -8,6 +11,9 @@ import 'package:ihuriro/screens/theme/colors.dart';
 import 'package:ihuriro/screens/widgets/appbar.dart';
 import 'package:ihuriro/services/auth.dart';
 import 'package:http/http.dart' as http;
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ListReportedCrimes extends StatefulWidget {
   const ListReportedCrimes({super.key});
@@ -17,7 +23,7 @@ class ListReportedCrimes extends StatefulWidget {
 }
 
 class _ListReportedCrimesState extends State<ListReportedCrimes> {
-  bool _loading = true;
+  bool _loading = true, _generatingReport = false;
 
   List<Map<String, dynamic>> _allReported = [];
 
@@ -40,6 +46,69 @@ class _ListReportedCrimesState extends State<ListReportedCrimes> {
     } else {
       // print('Request failed with status: ${response.statusCode}.');
     }
+  }
+
+  Future<void> generateReport() async {
+    generateAndSavePdf(_allReported);
+  }
+
+  void generateAndSavePdf(List<Map<String, dynamic>> reportData) async {
+    final pdf = pw.Document();
+
+    // Load a font that has Unicode support
+    final font = await PdfGoogleFonts.nunitoRegular();
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            children: [
+              pw.Text(
+                'Fuel fillings for drivers report',
+                style: pw.TextStyle(font: font, fontSize: 24),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Table.fromTextArray(
+                context: context,
+                headers: <String>[
+                  'Title',
+                  'Description',
+                  'Location',
+                  'Type',
+                  'Status',
+                  'Repoter'
+                ],
+                data: reportData.map((item) {
+                  final user = item['user'] as Map<String, dynamic>?;
+
+                  return <String>[
+                    item['title']?.toString() ?? 'N/A',
+                    item['description']?.toString() ?? 'N/A',
+                    "Lat: ${item['location_latitude']?.toString()}, Long: ${item['location_longitude']?.toString()}",
+                    item['type']?.toString() ?? 'N/A',
+                    item['status']?.toString() ?? 'N/A',
+                    user?['name']?.toString() ?? 'N/A',
+                  ];
+                }).toList(),
+                cellStyle: pw.TextStyle(font: font),
+                headerStyle:
+                    pw.TextStyle(font: font, fontWeight: pw.FontWeight.bold),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    final directory = await getExternalStorageDirectory();
+    final path = '${directory?.path}/report.pdf';
+    final file = File(path);
+    await file.writeAsBytes(await pdf.save());
+
+    setState(() {
+      _loading = false;
+    });
+    await Printing.sharePdf(bytes: await pdf.save(), filename: 'report.pdf');
   }
 
   @override
@@ -99,6 +168,41 @@ class _ListReportedCrimesState extends State<ListReportedCrimes> {
               )
             : Column(
                 children: [
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _generatingReport = true;
+                        generateReport();
+                      });
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateColor.resolveWith(
+                        (states) => primaryRed,
+                      ),
+                      padding: MaterialStateProperty.resolveWith(
+                        (states) => const EdgeInsets.symmetric(vertical: 10),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 60),
+                      child: _generatingReport
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              'Generate report',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                    ),
+                  ),
                   Expanded(
                     child: ListView.builder(
                       itemCount: _allReported.length,

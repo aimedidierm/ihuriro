@@ -61,34 +61,25 @@ class _ViewMapState extends State<ViewMap> {
                 end: Alignment.bottomRight,
               ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     height: 50,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).pop(context);
-                        },
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                          size: 40,
-                        ),
-                      ),
-                      const Text(
+                      SizedBox(width: 20),
+                      Text(
                         'View Map',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
                         ),
                       ),
-                      const SizedBox(width: 20),
+                      SizedBox(width: 20),
                     ],
                   ),
                 ],
@@ -134,12 +125,10 @@ class _ViewMapState extends State<ViewMap> {
     }
 
     return reportData.map<Marker>((report) {
-      final double latitude = report['location_latitude'] is int
-          ? (report['location_latitude'] as int).toDouble()
-          : report['location_latitude'] as double;
-      final double longitude = report['location_longitude'] is int
-          ? (report['location_longitude'] as int).toDouble()
-          : report['location_longitude'] as double;
+      final double latitude =
+          double.tryParse(report['location_latitude']) ?? 0.0;
+      final double longitude =
+          double.tryParse(report['location_longitude']) ?? 0.0;
 
       print(
           'Creating marker for report: ${report['title']} at $latitude, $longitude');

@@ -134,12 +134,10 @@ class _ViewMapState extends State<ViewMap> {
     }
 
     return reportData.map<Marker>((report) {
-      final double latitude = report['location_latitude'] is int
-          ? (report['location_latitude'] as int).toDouble()
-          : report['location_latitude'] as double;
-      final double longitude = report['location_longitude'] is int
-          ? (report['location_longitude'] as int).toDouble()
-          : report['location_longitude'] as double;
+      final double latitude =
+          double.tryParse(report['location_latitude']) ?? 0.0;
+      final double longitude =
+          double.tryParse(report['location_longitude']) ?? 0.0;
 
       print(
           'Creating marker for report: ${report['title']} at $latitude, $longitude');

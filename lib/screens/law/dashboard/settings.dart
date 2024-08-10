@@ -102,7 +102,7 @@ class _LawDashboardSettingState extends State<LawDashboardSetting> {
 
   Future<void> fetchData() async {
     String token = await getToken();
-    final response = await http.get(Uri.parse(governmentSettingsURL), headers: {
+    final response = await http.get(Uri.parse(lawSettingsURL), headers: {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token'
     });

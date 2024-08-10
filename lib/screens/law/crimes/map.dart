@@ -6,6 +6,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ihuriro/constants/api_constants.dart';
+import 'package:ihuriro/screens/theme/colors.dart';
+import 'package:ihuriro/screens/widgets/appbar.dart';
 import 'package:ihuriro/services/auth.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
@@ -47,8 +49,53 @@ class _ViewMapState extends State<ViewMap> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('View Map'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: ClipPath(
+          clipper: AppBarClipPath(),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [primaryRed, primaryRed.withOpacity(0.9)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop(context);
+                        },
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                      ),
+                      const Text(
+                        'View Map',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
       body: GoogleMap(
         onMapCreated: (GoogleMapController controller) {
@@ -87,12 +134,10 @@ class _ViewMapState extends State<ViewMap> {
     }
 
     return reportData.map<Marker>((report) {
-      final double latitude = report['location_latitude'] is int
-          ? (report['location_latitude'] as int).toDouble()
-          : report['location_latitude'] as double;
-      final double longitude = report['location_longitude'] is int
-          ? (report['location_longitude'] as int).toDouble()
-          : report['location_longitude'] as double;
+      final double latitude =
+          double.tryParse(report['location_latitude']) ?? 0.0;
+      final double longitude =
+          double.tryParse(report['location_longitude']) ?? 0.0;
 
       print(
           'Creating marker for report: ${report['title']} at $latitude, $longitude');

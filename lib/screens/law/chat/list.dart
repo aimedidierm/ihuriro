@@ -153,7 +153,6 @@ class _ListChatsState extends State<ListChats> {
                             builder: (context) => ChatRoomScreen(
                               receiver: id,
                               name: name,
-                              message: chat['content']!,
                             ),
                           ),
                         );

@@ -9,7 +9,14 @@ import 'package:ihuriro/screens/widgets/appbar.dart';
 import 'package:ihuriro/services/crime.dart';
 import 'package:location/location.dart';
 
-enum ReportType { crime, oridinary, weather }
+enum ReportType {
+  Crime,
+  PropertyDamage,
+  AccidentReport,
+  FireIncident,
+  WeatherIncident,
+  Others
+}
 
 class ReportCrime extends StatefulWidget {
   const ReportCrime({super.key});
